@@ -26,8 +26,9 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
     override init() {
         super.init()
         // Create the data model.
-        let dateFormatter = NSDateFormatter()
-        pageData = dateFormatter.monthSymbols
+        // let dateFormatter = NSDateFormatter()
+        // pageData = dateFormatter.monthSymbols
+        pageData = ["Walmart", "Kroger", "Tom Thumb", "Whole Foods", "Add you own list..."]
     }
 
     func viewControllerAtIndex(index: Int, storyboard: UIStoryboard) -> DataViewController? {
