@@ -22,7 +22,7 @@
                         <barButtonItem key="rightBarButtonItem" title="New" id="LCT-Yz-B6n"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="navItem" destination="rqX-AZ-ngW" id="sdZ-Q5-3Ik"/>
+                        <outlet property="navItem" destination="rqX-AZ-ngW" id="2mR-SK-gi9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q3h-pU-vEd" sceneMemberID="firstResponder"/>

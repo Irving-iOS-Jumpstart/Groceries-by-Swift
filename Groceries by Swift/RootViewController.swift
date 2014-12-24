@@ -11,10 +11,14 @@ import UIKit
 class RootViewController: UIViewController, UIPageViewControllerDelegate {
 
     var pageViewController: UIPageViewController?
+    var groceryLists: [GroceryList] = []
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        loadGroceries()
+        
         // Do any additional setup after loading the view, typically from a nib.
         // Configure the page view controller and add it as a child view controller.
         self.pageViewController = UIPageViewController(transitionStyle: .PageCurl, navigationOrientation: .Horizontal, options: nil)
@@ -50,12 +54,19 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    func loadGroceries() {
+        groceryLists.append(GroceryList(listName: "Walmart", groceries: ["milk", "candy"]))
+        groceryLists.append(GroceryList(listName: "Kroger", groceries: ["beer", "bread"]))
+        groceryLists.append(GroceryList(listName: "Target", groceries: ["doughnuts", "coffee"]))
+        groceryLists.append(GroceryList(listName: "Tom Thumb", groceries: ["bagels", "cream cheese"]))
+    }
 
     var modelController: ModelController {
         // Return the model controller object, creating it if necessary.
         // In more complex implementations, the model controller may be passed to the view controller.
         if _modelController == nil {
-            _modelController = ModelController()
+            _modelController = ModelController(pageData: groceryLists)
         }
         return _modelController!
     }
@@ -64,6 +75,7 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
 
     // MARK: - UIPageViewController delegate methods
 
+// Same spine location for iPad and iPhones
 //    func pageViewController(pageViewController: UIPageViewController, spineLocationForInterfaceOrientation orientation: UIInterfaceOrientation) -> UIPageViewControllerSpineLocation {
 //        if (orientation == .Portrait) || (orientation == .PortraitUpsideDown) || (UIDevice.currentDevice().userInterfaceIdiom == .Phone) {
 //            // In portrait orientation or on iPhone: Set the spine position to "min" and the page view controller's view controllers array to contain just one view controller. Setting the spine position to 'UIPageViewControllerSpineLocationMid' in landscape orientation sets the doubleSided property to YES, so set it to NO here.

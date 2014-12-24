@@ -15,6 +15,7 @@
 		099951F419DE616D00A85A84 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 099951F319DE616D00A85A84 /* Images.xcassets */; };
 		099951F719DE616D00A85A84 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099951F519DE616D00A85A84 /* LaunchScreen.xib */; };
 		0999520319DE616D00A85A84 /* Groceries_by_SwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999520219DE616D00A85A84 /* Groceries_by_SwiftTests.swift */; };
+		09F927471A4B599400C0E849 /* GroceryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F927461A4B599400C0E849 /* GroceryList.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 		099951FC19DE616D00A85A84 /* Groceries by SwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Groceries by SwiftTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0999520119DE616D00A85A84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0999520219DE616D00A85A84 /* Groceries_by_SwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Groceries_by_SwiftTests.swift; sourceTree = "<group>"; };
+		09F927461A4B599400C0E849 /* GroceryList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroceryList.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 				099951F319DE616D00A85A84 /* Images.xcassets */,
 				099951F519DE616D00A85A84 /* LaunchScreen.xib */,
 				099951E619DE616D00A85A84 /* Supporting Files */,
+				09F927461A4B599400C0E849 /* GroceryList.swift */,
 			);
 			path = "Groceries by Swift";
 			sourceTree = "<group>";
@@ -221,6 +224,7 @@
 				099951EB19DE616D00A85A84 /* RootViewController.swift in Sources */,
 				099951EF19DE616D00A85A84 /* ModelController.swift in Sources */,
 				099951ED19DE616D00A85A84 /* DataViewController.swift in Sources */,
+				09F927471A4B599400C0E849 /* GroceryList.swift in Sources */,
 				099951E919DE616D00A85A84 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -415,6 +419,7 @@
 				0999520819DE616D00A85A84 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0999520919DE616D00A85A84 /* Build configuration list for PBXNativeTarget "Groceries by SwiftTests" */ = {
 			isa = XCConfigurationList;
@@ -423,6 +428,7 @@
 				0999520B19DE616D00A85A84 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

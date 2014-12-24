@@ -28,7 +28,11 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
         // Create the data model.
         // let dateFormatter = NSDateFormatter()
         // pageData = dateFormatter.monthSymbols
-        pageData = ["Walmart", "Kroger", "Tom Thumb", "Whole Foods", "Add you own list..."]
+        // pageData = ["Walmart", "Kroger", "Tom Thumb", "Whole Foods", "Add you own list..."]
+    }
+    
+    init(pageData: [GroceryList]) {
+        self.pageData = pageData
     }
 
     func viewControllerAtIndex(index: Int, storyboard: UIStoryboard) -> DataViewController? {
@@ -59,7 +63,7 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
             return ""
         }
         else {
-            return pageData[index] as String
+            return (pageData[index] as GroceryList).listName as String
         }
     }
 
