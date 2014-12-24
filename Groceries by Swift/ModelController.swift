@@ -21,15 +21,6 @@ import UIKit
 class ModelController: NSObject, UIPageViewControllerDataSource {
 
     var pageData = NSArray()
-
-
-    override init() {
-        super.init()
-        // Create the data model.
-        // let dateFormatter = NSDateFormatter()
-        // pageData = dateFormatter.monthSymbols
-        // pageData = ["Walmart", "Kroger", "Tom Thumb", "Whole Foods", "Add you own list..."]
-    }
     
     init(pageData: [GroceryList]) {
         self.pageData = pageData

@@ -12,6 +12,8 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
 
     var pageViewController: UIPageViewController?
     var groceryLists: [GroceryList] = []
+    
+    @IBOutlet weak var navItem: UINavigationItem!
 
 
     override func viewDidLoad() {
@@ -32,15 +34,6 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
 
         self.addChildViewController(self.pageViewController!)
         self.view.addSubview(self.pageViewController!.view)
-
-        // Set the page view controller's bounds using an inset rect so that self's view is visible around the edges of the pages.
-        var pageViewRect = self.view.bounds
-        if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
-            pageViewRect = CGRectInset(pageViewRect, 40.0, 40.0)
-        }
-        // Don't change this for iPads
-        // self.pageViewController!.view.frame = pageViewRect
-
         self.pageViewController!.didMoveToParentViewController(self)
 
         // Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
@@ -56,9 +49,9 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
     }
     
     func loadGroceries() {
-        groceryLists.append(GroceryList(listName: "Walmart", groceries: ["milk", "candy"]))
+        groceryLists.append(GroceryList(listName: "Walmart", groceries: ["milk", "candy", "cookies", "water"]))
         groceryLists.append(GroceryList(listName: "Kroger", groceries: ["beer", "bread"]))
-        groceryLists.append(GroceryList(listName: "Target", groceries: ["doughnuts", "coffee"]))
+        groceryLists.append(GroceryList(listName: "Target", groceries: ["doughnuts", "coffee", "creamer"]))
         groceryLists.append(GroceryList(listName: "Tom Thumb", groceries: ["bagels", "cream cheese"]))
     }
 
@@ -74,41 +67,8 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
     var _modelController: ModelController? = nil
 
     // MARK: - UIPageViewController delegate methods
-
-// Same spine location for iPad and iPhones
-//    func pageViewController(pageViewController: UIPageViewController, spineLocationForInterfaceOrientation orientation: UIInterfaceOrientation) -> UIPageViewControllerSpineLocation {
-//        if (orientation == .Portrait) || (orientation == .PortraitUpsideDown) || (UIDevice.currentDevice().userInterfaceIdiom == .Phone) {
-//            // In portrait orientation or on iPhone: Set the spine position to "min" and the page view controller's view controllers array to contain just one view controller. Setting the spine position to 'UIPageViewControllerSpineLocationMid' in landscape orientation sets the doubleSided property to YES, so set it to NO here.
-//            let currentViewController = self.pageViewController!.viewControllers[0] as UIViewController
-//            let viewControllers: NSArray = [currentViewController]
-//            self.pageViewController!.setViewControllers(viewControllers, direction: .Forward, animated: true, completion: {done in })
-//
-//            self.pageViewController!.doubleSided = false
-//            return .Min
-//        }
-//
-//        // In landscape orientation: Set set the spine location to "mid" and the page view controller's view controllers array to contain two view controllers. If the current page is even, set it to contain the current and next view controllers; if it is odd, set the array to contain the previous and current view controllers.
-//        let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
-//        var viewControllers: NSArray
-//
-//        let indexOfCurrentViewController = self.modelController.indexOfViewController(currentViewController)
-//        if (indexOfCurrentViewController == 0) || (indexOfCurrentViewController % 2 == 0) {
-//            let nextViewController = self.modelController.pageViewController(self.pageViewController!, viewControllerAfterViewController: currentViewController)
-//            viewControllers = [currentViewController, nextViewController!]
-//        } else {
-//            let previousViewController = self.modelController.pageViewController(self.pageViewController!, viewControllerBeforeViewController: currentViewController)
-//            viewControllers = [previousViewController!, currentViewController]
-//        }
-//        self.pageViewController!.setViewControllers(viewControllers, direction: .Forward, animated: true, completion: {done in })
-//
-//        return .Mid
-//    }
-
-    @IBOutlet weak var navItem: UINavigationItem!
-    func pageViewController(pageViewController: UIPageViewController,
-        didFinishAnimating finished: Bool,
-        previousViewControllers: [AnyObject],
-        transitionCompleted completed: Bool) {
+    
+    func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
             let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
             navItem.title = self.modelController.titleOfViewController(currentViewController)
     }
