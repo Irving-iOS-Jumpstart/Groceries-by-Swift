@@ -21,6 +21,9 @@
                         <barButtonItem key="leftBarButtonItem" title="Show All" id="kgZ-sB-qG0"/>
                         <barButtonItem key="rightBarButtonItem" title="New" id="LCT-Yz-B6n"/>
                     </navigationItem>
+                    <connections>
+                        <outlet property="navItem" destination="rqX-AZ-ngW" id="sdZ-Q5-3Ik"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q3h-pU-vEd" sceneMemberID="firstResponder"/>
             </objects>

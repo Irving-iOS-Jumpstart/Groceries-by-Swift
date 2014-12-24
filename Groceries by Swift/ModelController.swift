@@ -52,6 +52,16 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
             return NSNotFound
         }
     }
+    
+    func titleOfViewController(viewController: UIViewController) -> String {
+        var index = self.indexOfViewController(viewController as DataViewController)
+        if index == NSNotFound {
+            return ""
+        }
+        else {
+            return pageData[index] as String
+        }
+    }
 
     // MARK: - Page View Controller Data Source
 
