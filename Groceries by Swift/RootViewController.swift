@@ -34,7 +34,8 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
         if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
             pageViewRect = CGRectInset(pageViewRect, 40.0, 40.0)
         }
-        self.pageViewController!.view.frame = pageViewRect
+        // Don't change this for iPads
+        // self.pageViewController!.view.frame = pageViewRect
 
         self.pageViewController!.didMoveToParentViewController(self)
 

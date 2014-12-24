@@ -45,7 +45,7 @@ class DataViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("tableCell", forIndexPath: indexPath) as UITableViewCell
-        cell.textLabel.text = groceries[indexPath.row]
+        cell.textLabel!.text = groceries[indexPath.row]
         return cell
     }
 
