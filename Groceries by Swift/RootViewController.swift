@@ -91,6 +91,9 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
             } else {
                 self.groceryLists.append(GroceryList(listName: listName, groceries: []))
                 self.modelController.updateList(self.groceryLists)
+                let newListController: DataViewController = self.modelController.viewControllerAtIndex(self.groceryLists.count - 1, storyboard: self.storyboard!)!
+                self.pageViewController!.setViewControllers([newListController], direction: .Forward, animated: true, completion: {done in })
+                self.navItem.title = listName
             }
         }))
         
