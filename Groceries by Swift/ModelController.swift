@@ -21,10 +21,6 @@ import UIKit
 class ModelController: NSObject, UIPageViewControllerDataSource {
 
     var pageData = NSArray()
-    
-    init(pageData: [GroceryList]) {
-        self.pageData = pageData
-    }
 
     func viewControllerAtIndex(index: Int, storyboard: UIStoryboard) -> DataViewController? {
         // Return the data view controller for the given index.
@@ -57,6 +53,10 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
             return (pageData[index] as GroceryList).listName as String
         }
     }
+    
+    func updateList(pageData : [GroceryList]) {
+        self.pageData = pageData
+    }
 
     // MARK: - Page View Controller Data Source
 
@@ -82,6 +82,5 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
         }
         return self.viewControllerAtIndex(index, storyboard: viewController.storyboard!)
     }
-
 }
 

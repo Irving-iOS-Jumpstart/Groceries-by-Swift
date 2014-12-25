@@ -59,7 +59,8 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
         // Return the model controller object, creating it if necessary.
         // In more complex implementations, the model controller may be passed to the view controller.
         if _modelController == nil {
-            _modelController = ModelController(pageData: groceryLists)
+            _modelController = ModelController()
+            _modelController!.updateList(self.groceryLists)
         }
         return _modelController!
     }
@@ -71,6 +72,39 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
             let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
             navItem.title = self.modelController.titleOfViewController(currentViewController)
+    }
+
+    // Add a new list
+    
+    @IBAction func addListButtonPressed(sender: UIBarButtonItem) {
+        
+        let alert = UIAlertController(title: "Add New Grocery List", message: "", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        alert.addTextFieldWithConfigurationHandler{ (txtListName:UITextField!) -> Void in
+            txtListName.placeholder = "Enter a list name"
+        }
+        
+        alert.addAction(UIAlertAction(title: "Add", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
+            let listName: String = (alert.textFields![0] as UITextField).text.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+            if(listName == "") {
+                self.showMsg("Missing Name!", msg: "Enter a valid list name.")
+            } else {
+                self.groceryLists.append(GroceryList(listName: listName, groceries: []))
+                self.modelController.updateList(self.groceryLists)
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+        
+        self.presentViewController(alert, animated: false, completion: nil)
+    }
+    
+    // Show message dialog
+    
+    func showMsg(title: String, msg: String) {
+        let alert = UIAlertController(title: title, message: msg, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alert, animated: false, completion: nil)
     }
 }
 
