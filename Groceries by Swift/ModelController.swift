@@ -45,7 +45,7 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
     }
     
     func titleOfViewController(viewController: UIViewController) -> String {
-        var index = self.indexOfViewController(viewController as DataViewController)
+        let index = self.indexOfViewController(viewController as DataViewController)
         if index == NSNotFound {
             return ""
         }

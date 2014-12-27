@@ -38,9 +38,7 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
 
         // Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
         self.view.gestureRecognizers = self.pageViewController!.gestureRecognizers
-        
-        let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
-        navItem.title = self.modelController.titleOfViewController(currentViewController)
+        doTitle()
     }
 
     override func didReceiveMemoryWarning() {
@@ -70,15 +68,14 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
     // MARK: - UIPageViewController delegate methods
     
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-            let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
-            navItem.title = self.modelController.titleOfViewController(currentViewController)
+            doTitle()
     }
 
     // Add a new list
     
     @IBAction func addListButtonPressed(sender: UIBarButtonItem) {
         
-        let alert = UIAlertController(title: "Add New Grocery List", message: "", preferredStyle: UIAlertControllerStyle.Alert)
+        let alert = UIAlertController(title: "Add New Grocery List", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
         
         alert.addTextFieldWithConfigurationHandler{ (txtListName:UITextField!) -> Void in
             txtListName.placeholder = "Enter a list name"
@@ -86,7 +83,7 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
         
         alert.addAction(UIAlertAction(title: "Add", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
             let listName: String = (alert.textFields![0] as UITextField).text.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
-            if(listName == "") {
+            if listName == "" {
                 self.showMsg("Missing Name!", msg: "Enter a valid list name.")
             } else {
                 self.groceryLists.append(GroceryList(listName: listName, groceries: []))
@@ -102,12 +99,53 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
         self.presentViewController(alert, animated: false, completion: nil)
     }
     
+    // Delete current list
+    
+    @IBAction func deleteListButtonPressed(sender: UIBarButtonItem) {
+        
+        if groceryLists.count == 1 {
+            showMsg("Cannot delete!", msg: "You need at least one grocery list.")
+        }
+        else {
+            let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
+            var index = self.modelController.indexOfViewController(currentViewController as DataViewController)
+            
+            let alert = UIAlertController(title: "Delete List", message: "Do you want to delete '\(self.groceryLists[index].listName)'?", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
+                self.groceryLists.removeAtIndex(index)
+                self.modelController.updateList(self.groceryLists)
+                
+                var direction = UIPageViewControllerNavigationDirection.Forward
+                if self.groceryLists.count == 1 {
+                    if(index == 1) {
+                        direction = UIPageViewControllerNavigationDirection.Reverse
+                    }
+                    index = 0
+                }
+                
+                let newListController: DataViewController = self.modelController.viewControllerAtIndex(index, storyboard: self.storyboard!)!
+                self.pageViewController!.setViewControllers([newListController], direction: direction, animated: true, completion: {done in })
+                self.doTitle()
+            }))
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+            
+            self.presentViewController(alert, animated: false, completion: nil)
+        }
+    }
+    
     // Show message dialog
     
     func showMsg(title: String, msg: String) {
         let alert = UIAlertController(title: title, message: msg, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alert, animated: false, completion: nil)
+    }
+    
+    func doTitle() {
+        let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
+        navItem.title = self.modelController.titleOfViewController(currentViewController)
     }
 }
 

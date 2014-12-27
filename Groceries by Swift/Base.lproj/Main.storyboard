@@ -23,7 +23,11 @@
                                 <action selector="addListButtonPressed:" destination="703-4V-yAM" id="JnA-ry-Pkk"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="trash" id="LCT-Yz-B6n"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="trash" id="LCT-Yz-B6n">
+                            <connections>
+                                <action selector="deleteListButtonPressed:" destination="703-4V-yAM" id="FOq-n6-puj"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="navItem" destination="rqX-AZ-ngW" id="2mR-SK-gi9"/>
