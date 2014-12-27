@@ -99,38 +99,63 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
         self.presentViewController(alert, animated: false, completion: nil)
     }
     
-    // Delete current list
+    // Edit current list
     
-    @IBAction func deleteListButtonPressed(sender: UIBarButtonItem) {
+    @IBAction func editListButtonPressed(sender: UIBarButtonItem) {
         
-        if groceryLists.count == 1 {
-            showMsg("Cannot delete!", msg: "You need at least one grocery list.")
+        let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
+        var index = self.modelController.indexOfViewController(currentViewController as DataViewController)
+        
+        let alert = UIAlertController(title: "List: " + self.groceryLists[index].listName, message: "Edit name and tap update.", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        alert.addTextFieldWithConfigurationHandler{ (txtListName:UITextField!) -> Void in
+            txtListName.placeholder = "Enter a list name"
+            txtListName.text = self.groceryLists[index].listName
         }
-        else {
-            let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
-            var index = self.modelController.indexOfViewController(currentViewController as DataViewController)
-            
-            let alert = UIAlertController(title: "Delete List", message: "Do you want to delete '\(self.groceryLists[index].listName)'?", preferredStyle: UIAlertControllerStyle.Alert)
-            
-            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
-                self.groceryLists.removeAtIndex(index)
+        
+        alert.addAction(UIAlertAction(title: "Update", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
+            let listName: String = (alert.textFields![0] as UITextField).text.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+            if listName == "" {
+                self.showMsg("Missing Name!", msg: "Enter a valid item name.")
+            } else {
+                self.groceryLists[index].listName = listName
                 self.modelController.updateList(self.groceryLists)
+                self.navItem.title = listName
+            }
+        }))
+        
+        
+        
+        if groceryLists.count > 1 {
+            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action:UIAlertAction!) -> Void in
                 
-                var direction = UIPageViewControllerNavigationDirection.Forward
-                if self.groceryLists.count == index {
-                    direction = UIPageViewControllerNavigationDirection.Reverse
-                    index--
-                }
+                let alert2 = UIAlertController(title: "Delete List: " + self.groceryLists[index].listName, message: "Are you sure you want to delete?", preferredStyle: UIAlertControllerStyle.Alert)
                 
-                let newListController: DataViewController = self.modelController.viewControllerAtIndex(index, storyboard: self.storyboard!)!
-                self.pageViewController!.setViewControllers([newListController], direction: direction, animated: true, completion: {done in })
-                self.doTitle()
+                
+                alert2.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
+                    self.groceryLists.removeAtIndex(index)
+                    self.modelController.updateList(self.groceryLists)
+                    
+                    var direction = UIPageViewControllerNavigationDirection.Forward
+                    if self.groceryLists.count == index {
+                        direction = UIPageViewControllerNavigationDirection.Reverse
+                        index--
+                    }
+                    
+                    let newListController: DataViewController = self.modelController.viewControllerAtIndex(index, storyboard: self.storyboard!)!
+                    self.pageViewController!.setViewControllers([newListController], direction: direction, animated: true, completion: {done in })
+                    self.doTitle()
+                }))
+            
+                alert2.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Cancel, handler: nil))
+            
+                self.presentViewController(alert2, animated: false, completion: nil)
             }))
-            
-            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
-            
-            self.presentViewController(alert, animated: false, completion: nil)
         }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+        
+        self.presentViewController(alert, animated: false, completion: nil)
     }
     
     // Show message dialog

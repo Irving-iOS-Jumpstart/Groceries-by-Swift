@@ -72,7 +72,7 @@ class DataViewController: UITableViewController {
             // Edit Item...
             var groc = gList.groceries[indexPath.row]
             
-            let alert = UIAlertController(title: groc.itemName, message: "Edit and tap update", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: "Item: " + groc.itemName, message: "Edit name and tap update.", preferredStyle: UIAlertControllerStyle.Alert)
             
             alert.addTextFieldWithConfigurationHandler{ (txtItemName:UITextField!) -> Void in
                 txtItemName.placeholder = "Enter an item name"
@@ -87,7 +87,6 @@ class DataViewController: UITableViewController {
                     groc.itemName = itemName
                     tableView.reloadData()
                 }
-                
             }))
             
             alert.addAction(UIAlertAction(title: groc.done ? "Uncheck" : "Check!", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
@@ -101,7 +100,7 @@ class DataViewController: UITableViewController {
                 }
             }))
             
-            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
+            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action:UIAlertAction!) -> Void in
                 gList.groceries.removeAtIndex(indexPath.row)
                 tableView.reloadData()
             }))
