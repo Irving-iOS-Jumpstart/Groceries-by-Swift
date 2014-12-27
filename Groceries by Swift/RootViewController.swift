@@ -117,11 +117,9 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
                 self.modelController.updateList(self.groceryLists)
                 
                 var direction = UIPageViewControllerNavigationDirection.Forward
-                if self.groceryLists.count == 1 {
-                    if(index == 1) {
-                        direction = UIPageViewControllerNavigationDirection.Reverse
-                    }
-                    index = 0
+                if self.groceryLists.count == index {
+                    direction = UIPageViewControllerNavigationDirection.Reverse
+                    index--
                 }
                 
                 let newListController: DataViewController = self.modelController.viewControllerAtIndex(index, storyboard: self.storyboard!)!
