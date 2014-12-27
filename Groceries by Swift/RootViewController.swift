@@ -47,10 +47,10 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
     }
     
     func loadGroceries() {
-        groceryLists.append(GroceryList(listName: "Walmart", groceries: ["milk", "candy", "cookies", "water"]))
-        groceryLists.append(GroceryList(listName: "Kroger", groceries: ["beer", "bread"]))
-        groceryLists.append(GroceryList(listName: "Target", groceries: ["doughnuts", "coffee", "creamer"]))
-        groceryLists.append(GroceryList(listName: "Tom Thumb", groceries: ["bagels", "cream cheese"]))
+        groceryLists.append(GroceryList(listName: "Walmart", groceries: [GroceryItem(itemName: "milk"), GroceryItem(itemName: "candy"), GroceryItem(itemName: "cookies"), GroceryItem(itemName: "water")]))
+        groceryLists.append(GroceryList(listName: "Kroger", groceries: [GroceryItem(itemName: "beer"), GroceryItem(itemName: "bread")]))
+        groceryLists.append(GroceryList(listName: "Target", groceries: [GroceryItem(itemName: "doughnuts"), GroceryItem(itemName: "coffee"), GroceryItem(itemName: "creamer")]))
+        groceryLists.append(GroceryList(listName: "Tom Thumb", groceries: [GroceryItem(itemName: "bagels"), GroceryItem(itemName: "cream cheese")]))
     }
 
     var modelController: ModelController {

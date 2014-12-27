@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		092E25E91A4F5F16007F6C2E /* GroceryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092E25E81A4F5F16007F6C2E /* GroceryItem.swift */; };
 		099951E919DE616D00A85A84 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 099951E819DE616D00A85A84 /* AppDelegate.swift */; };
 		099951EB19DE616D00A85A84 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 099951EA19DE616D00A85A84 /* RootViewController.swift */; };
 		099951ED19DE616D00A85A84 /* DataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 099951EC19DE616D00A85A84 /* DataViewController.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		092E25E81A4F5F16007F6C2E /* GroceryItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroceryItem.swift; sourceTree = "<group>"; };
 		099951E319DE616D00A85A84 /* Groceries by Swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Groceries by Swift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		099951E719DE616D00A85A84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		099951E819DE616D00A85A84 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				099951F519DE616D00A85A84 /* LaunchScreen.xib */,
 				099951E619DE616D00A85A84 /* Supporting Files */,
 				09F927461A4B599400C0E849 /* GroceryList.swift */,
+				092E25E81A4F5F16007F6C2E /* GroceryItem.swift */,
 			);
 			path = "Groceries by Swift";
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 				099951EF19DE616D00A85A84 /* ModelController.swift in Sources */,
 				099951ED19DE616D00A85A84 /* DataViewController.swift in Sources */,
 				09F927471A4B599400C0E849 /* GroceryList.swift in Sources */,
+				092E25E91A4F5F16007F6C2E /* GroceryItem.swift in Sources */,
 				099951E919DE616D00A85A84 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

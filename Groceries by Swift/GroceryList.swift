@@ -10,9 +10,9 @@ import Foundation
 
 class GroceryList {
     var listName: String
-    var groceries: [String] = []
+    var groceries: [GroceryItem] = []
     
-    init(listName: String, groceries: [String]) {
+    init(listName: String, groceries: [GroceryItem]) {
         self.listName = listName
         self.groceries = groceries
     }
