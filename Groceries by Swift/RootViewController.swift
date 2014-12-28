@@ -16,7 +16,7 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
     var cdGroceryLists: [CDGroceryList] = []
     
     let appDel = UIApplication.sharedApplication().delegate as AppDelegate
-    let moCtxt = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext!
+    let moCtx = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext!
     var gListFetcher: NSFetchedResultsController = NSFetchedResultsController()
     
     
@@ -68,13 +68,19 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         if gListFetcher.performFetch(nil) {
             cdGroceryLists = gListFetcher.fetchedObjects! as [CDGroceryList]
             if(cdGroceryLists.count == 0) {
-                println("No List! Creating one.")
-                addEmptyGroceryList("Walmart")
+                println("No List! Creating two...")
+                makeGroceryList("Walmart").groceries = NSSet(array: [makeGroceryItem("Dozen Donughts"), makeGroceryItem("Coffee 1lb bag")])
+                makeGroceryList("Kroger").groceries = NSSet(array: [makeGroceryItem("Whole Wheat Bread"), makeGroceryItem("Budlight 6 pack")])
+                self.appDel.saveContext()
                 loadCDGroceries()
             }
             else {
-                for res in gListFetcher.fetchedObjects! as [CDGroceryList] {
-                    println("List: " + res.listName)
+                for gList in gListFetcher.fetchedObjects! as [CDGroceryList] {
+                    println("List: " + gList.listName)
+                    for gItem in gList.groceries {
+                        println(" Item: " + (gItem as CDGroceryItem).itemName)
+                    }
+                    
                 }
             }
         }
@@ -119,12 +125,13 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
                 self.pageViewController!.setViewControllers([newListController], direction: .Forward, animated: true, completion: {done in })
                 self.navItem.title = listName
                 
-                self.addEmptyGroceryList(listName)
+                self.makeGroceryList(listName)
+                self.appDel.saveContext()
                 
                 var fReq = NSFetchRequest(entityName: "CDGroceryList")
                 var error:NSError? = nil
                 
-                var results: NSArray = self.moCtxt.executeFetchRequest(fReq, error: &error)!
+                var results: NSArray = self.moCtx.executeFetchRequest(fReq, error: &error)!
                 
                 for res in results as [CDGroceryList] {
                     println("Result: \(res.listName)")
@@ -207,13 +214,20 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         navItem.title = self.modelController.titleOfViewController(currentViewController)
     }
     
-    // Core Data Save & Fetch
+    // Core Data Make & Fetch
     
-    func addEmptyGroceryList(listName: String) {
-        let eDesc = NSEntityDescription.entityForName("CDGroceryList", inManagedObjectContext: self.moCtxt)
-        let gList = CDGroceryList(entity: eDesc!, insertIntoManagedObjectContext: self.moCtxt)
+    func makeGroceryList(listName: String) -> CDGroceryList {
+        let eDesc = NSEntityDescription.entityForName("CDGroceryList", inManagedObjectContext: self.moCtx)
+        let gList = CDGroceryList(entity: eDesc!, insertIntoManagedObjectContext: self.moCtx)
         gList.listName = listName
-        self.appDel.saveContext()
+        return gList
+    }
+    
+    func makeGroceryItem(itemName: String) -> CDGroceryItem {
+        let eDesc = NSEntityDescription.entityForName("CDGroceryItem", inManagedObjectContext: self.moCtx)
+        let gItem = CDGroceryItem(entity: eDesc!, insertIntoManagedObjectContext: self.moCtx)
+        gItem.itemName = itemName
+        return gItem
     }
     
     func getGroceryListFetchReq() -> NSFetchRequest {
@@ -224,7 +238,7 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
     }
     
     func getGroceryListFetcher() -> NSFetchedResultsController {
-        return NSFetchedResultsController(fetchRequest: getGroceryListFetchReq(), managedObjectContext: moCtxt, sectionNameKeyPath: nil, cacheName: nil)
+        return NSFetchedResultsController(fetchRequest: getGroceryListFetchReq(), managedObjectContext: moCtx, sectionNameKeyPath: nil, cacheName: nil)
     }
 }
 
