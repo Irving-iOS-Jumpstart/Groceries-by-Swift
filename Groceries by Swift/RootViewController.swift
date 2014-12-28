@@ -10,52 +10,45 @@ import UIKit
 import CoreData
 
 class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetchedResultsControllerDelegate {
-
+    
     var pageViewController: UIPageViewController?
     var groceryLists: [GroceryList] = []
+    var cdGroceryLists: [CDGroceryList] = []
     
     let appDel = UIApplication.sharedApplication().delegate as AppDelegate
     let moCtxt = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext!
     var gListFetcher: NSFetchedResultsController = NSFetchedResultsController()
-
+    
     
     @IBOutlet weak var navItem: UINavigationItem!
-
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadGroceries()
-        
-        gListFetcher = getGroceryListFetcher()
-        gListFetcher.delegate = self
-        
-        if gListFetcher.performFetch(nil) {
-            for res in gListFetcher.fetchedObjects!{
-                println(res)
-            }
-        }
+        loadCDGroceries()
         
         // Do any additional setup after loading the view, typically from a nib.
         // Configure the page view controller and add it as a child view controller.
         self.pageViewController = UIPageViewController(transitionStyle: .PageCurl, navigationOrientation: .Horizontal, options: nil)
         self.pageViewController!.delegate = self
-
+        
         let startingViewController: DataViewController = self.modelController.viewControllerAtIndex(0, storyboard: self.storyboard!)!
         let viewControllers: NSArray = [startingViewController]
         self.pageViewController!.setViewControllers(viewControllers, direction: .Forward, animated: false, completion: {done in })
-
+        
         self.pageViewController!.dataSource = self.modelController
-
+        
         self.addChildViewController(self.pageViewController!)
         self.view.addSubview(self.pageViewController!.view)
         self.pageViewController!.didMoveToParentViewController(self)
-
+        
         // Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
         self.view.gestureRecognizers = self.pageViewController!.gestureRecognizers
         doTitle()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -67,7 +60,26 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         groceryLists.append(GroceryList(listName: "Target", groceries: [GroceryItem(itemName: "doughnuts"), GroceryItem(itemName: "coffee"), GroceryItem(itemName: "creamer")]))
         groceryLists.append(GroceryList(listName: "Tom Thumb", groceries: [GroceryItem(itemName: "bagels"), GroceryItem(itemName: "cream cheese")]))
     }
-
+    
+    func loadCDGroceries() {
+        gListFetcher = getGroceryListFetcher()
+        gListFetcher.delegate = self
+        
+        if gListFetcher.performFetch(nil) {
+            cdGroceryLists = gListFetcher.fetchedObjects! as [CDGroceryList]
+            if(cdGroceryLists.count == 0) {
+                println("No List! Creating one.")
+                addEmptyGroceryList("Walmart")
+                loadCDGroceries()
+            }
+            else {
+                for res in gListFetcher.fetchedObjects! as [CDGroceryList] {
+                    println("List: " + res.listName)
+                }
+            }
+        }
+    }
+    
     var modelController: ModelController {
         // Return the model controller object, creating it if necessary.
         // In more complex implementations, the model controller may be passed to the view controller.
@@ -77,15 +89,15 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         }
         return _modelController!
     }
-
+    
     var _modelController: ModelController? = nil
-
+    
     // MARK: - UIPageViewController delegate methods
     
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-            doTitle()
+        doTitle()
     }
-
+    
     // Add a new list
     
     @IBAction func addListButtonPressed(sender: UIBarButtonItem) {
@@ -107,18 +119,15 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
                 self.pageViewController!.setViewControllers([newListController], direction: .Forward, animated: true, completion: {done in })
                 self.navItem.title = listName
                 
-                let eDesc = NSEntityDescription.entityForName("CDGroceryList", inManagedObjectContext: self.moCtxt)
-                let gList = CDGroceryList(entity: eDesc!, insertIntoManagedObjectContext: self.moCtxt)
-                gList.listName = listName
-                self.appDel.saveContext()
+                self.addEmptyGroceryList(listName)
                 
                 var fReq = NSFetchRequest(entityName: "CDGroceryList")
                 var error:NSError? = nil
                 
                 var results: NSArray = self.moCtxt.executeFetchRequest(fReq, error: &error)!
                 
-                for res in results {
-                    println("Result: \(res)")
+                for res in results as [CDGroceryList] {
+                    println("Result: \(res.listName)")
                 }
             }
         }))
@@ -153,8 +162,6 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
             }
         }))
         
-        
-        
         if groceryLists.count > 1 {
             alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action:UIAlertAction!) -> Void in
                 
@@ -175,9 +182,9 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
                     self.pageViewController!.setViewControllers([newListController], direction: direction, animated: true, completion: {done in })
                     self.doTitle()
                 }))
-            
+                
                 alert2.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Cancel, handler: nil))
-            
+                
                 self.presentViewController(alert2, animated: false, completion: nil)
             }))
         }
@@ -200,7 +207,14 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         navItem.title = self.modelController.titleOfViewController(currentViewController)
     }
     
-    // Core Data Fetch
+    // Core Data Save & Fetch
+    
+    func addEmptyGroceryList(listName: String) {
+        let eDesc = NSEntityDescription.entityForName("CDGroceryList", inManagedObjectContext: self.moCtxt)
+        let gList = CDGroceryList(entity: eDesc!, insertIntoManagedObjectContext: self.moCtxt)
+        gList.listName = listName
+        self.appDel.saveContext()
+    }
     
     func getGroceryListFetchReq() -> NSFetchRequest {
         let fReq = NSFetchRequest(entityName: "CDGroceryList")

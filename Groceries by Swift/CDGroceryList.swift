@@ -9,9 +9,10 @@
 import Foundation
 import CoreData
 
+@objc(CDGroceryList)
 class CDGroceryList: NSManagedObject {
-
+    
     @NSManaged var listName: String
     @NSManaged var groceries: NSSet
-
+    
 }

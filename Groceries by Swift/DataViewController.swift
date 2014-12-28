@@ -9,14 +9,14 @@
 import UIKit
 
 class DataViewController: UITableViewController {
-
+    
     var dataObject: AnyObject?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -118,6 +118,6 @@ class DataViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alert, animated: false, completion: nil)
     }
-
+    
 }
 

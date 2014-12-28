@@ -9,6 +9,7 @@
 import Foundation
 import CoreData
 
+@objc(CDGroceryItem)
 class CDGroceryItem: NSManagedObject {
 
     @NSManaged var itemName: String
