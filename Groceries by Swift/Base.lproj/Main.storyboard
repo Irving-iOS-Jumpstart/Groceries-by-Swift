@@ -23,7 +23,7 @@
                                 <action selector="addListButtonPressed:" destination="703-4V-yAM" id="JnA-ry-Pkk"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="LCT-Yz-B6n">
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="LCT-Yz-B6n">
                             <connections>
                                 <action selector="editListButtonPressed:" destination="703-4V-yAM" id="75F-zc-bHl"/>
                             </connections>

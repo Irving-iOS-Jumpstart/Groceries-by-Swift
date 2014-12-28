@@ -7,11 +7,17 @@
 //
 
 import UIKit
+import CoreData
 
-class RootViewController: UIViewController, UIPageViewControllerDelegate {
+class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetchedResultsControllerDelegate {
 
     var pageViewController: UIPageViewController?
     var groceryLists: [GroceryList] = []
+    
+    let appDel = UIApplication.sharedApplication().delegate as AppDelegate
+    let moCtxt = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext!
+    var gListFetcher: NSFetchedResultsController = NSFetchedResultsController()
+
     
     @IBOutlet weak var navItem: UINavigationItem!
 
@@ -20,6 +26,15 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
         super.viewDidLoad()
         
         loadGroceries()
+        
+        gListFetcher = getGroceryListFetcher()
+        gListFetcher.delegate = self
+        
+        if gListFetcher.performFetch(nil) {
+            for res in gListFetcher.fetchedObjects!{
+                println(res)
+            }
+        }
         
         // Do any additional setup after loading the view, typically from a nib.
         // Configure the page view controller and add it as a child view controller.
@@ -91,6 +106,20 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
                 let newListController: DataViewController = self.modelController.viewControllerAtIndex(self.groceryLists.count - 1, storyboard: self.storyboard!)!
                 self.pageViewController!.setViewControllers([newListController], direction: .Forward, animated: true, completion: {done in })
                 self.navItem.title = listName
+                
+                let eDesc = NSEntityDescription.entityForName("CDGroceryList", inManagedObjectContext: self.moCtxt)
+                let gList = CDGroceryList(entity: eDesc!, insertIntoManagedObjectContext: self.moCtxt)
+                gList.listName = listName
+                self.appDel.saveContext()
+                
+                var fReq = NSFetchRequest(entityName: "CDGroceryList")
+                var error:NSError? = nil
+                
+                var results: NSArray = self.moCtxt.executeFetchRequest(fReq, error: &error)!
+                
+                for res in results {
+                    println("Result: \(res)")
+                }
             }
         }))
         
@@ -169,6 +198,19 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate {
     func doTitle() {
         let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
         navItem.title = self.modelController.titleOfViewController(currentViewController)
+    }
+    
+    // Core Data Fetch
+    
+    func getGroceryListFetchReq() -> NSFetchRequest {
+        let fReq = NSFetchRequest(entityName: "CDGroceryList")
+        let sortDesc = NSSortDescriptor(key: "listName", ascending: true)
+        fReq.sortDescriptors = [sortDesc]
+        return fReq
+    }
+    
+    func getGroceryListFetcher() -> NSFetchedResultsController {
+        return NSFetchedResultsController(fetchRequest: getGroceryListFetchReq(), managedObjectContext: moCtxt, sectionNameKeyPath: nil, cacheName: nil)
     }
 }
 
