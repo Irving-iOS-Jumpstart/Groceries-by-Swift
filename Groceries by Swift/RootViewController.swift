@@ -12,7 +12,6 @@ import CoreData
 class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetchedResultsControllerDelegate {
     
     var pageViewController: UIPageViewController?
-    var groceryLists: [GroceryList] = []
     var cdGroceryLists: [CDGroceryList] = []
     
     let appDel = UIApplication.sharedApplication().delegate as AppDelegate
@@ -26,7 +25,6 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadGroceries()
         loadCDGroceries()
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -54,13 +52,6 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         // Dispose of any resources that can be recreated.
     }
     
-    func loadGroceries() {
-        groceryLists.append(GroceryList(listName: "Walmart", groceries: [GroceryItem(itemName: "milk"), GroceryItem(itemName: "candy"), GroceryItem(itemName: "cookies"), GroceryItem(itemName: "water")]))
-        groceryLists.append(GroceryList(listName: "Kroger", groceries: [GroceryItem(itemName: "beer"), GroceryItem(itemName: "bread")]))
-        groceryLists.append(GroceryList(listName: "Target", groceries: [GroceryItem(itemName: "doughnuts"), GroceryItem(itemName: "coffee"), GroceryItem(itemName: "creamer")]))
-        groceryLists.append(GroceryList(listName: "Tom Thumb", groceries: [GroceryItem(itemName: "bagels"), GroceryItem(itemName: "cream cheese")]))
-    }
-    
     func loadCDGroceries() {
         gListFetcher = getGroceryListFetcher()
         gListFetcher.delegate = self
@@ -69,8 +60,8 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
             cdGroceryLists = gListFetcher.fetchedObjects! as [CDGroceryList]
             if(cdGroceryLists.count == 0) {
                 println("No List! Creating two...")
-                makeGroceryList("Walmart").groceries = NSSet(array: [makeGroceryItem("Dozen Donughts"), makeGroceryItem("Coffee 1lb bag")])
-                makeGroceryList("Kroger").groceries = NSSet(array: [makeGroceryItem("Whole Wheat Bread"), makeGroceryItem("Budlight 6 pack")])
+                insertGroceryList("Walmart").groceries = NSSet(array: [insertGroceryItem("Dozen Donughts"), insertGroceryItem("Coffee 1lb bag")])
+                insertGroceryList("Kroger").groceries = NSSet(array: [insertGroceryItem("Whole Wheat Bread"), insertGroceryItem("Budlight 6 pack")])
                 self.appDel.saveContext()
                 loadCDGroceries()
             }
@@ -78,12 +69,26 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
                 for gList in gListFetcher.fetchedObjects! as [CDGroceryList] {
                     println("List: " + gList.listName)
                     for gItem in gList.groceries {
-                        println(" Item: " + (gItem as CDGroceryItem).itemName)
+                        println(" - Item: " + (gItem as CDGroceryItem).itemName + " - \((gItem as CDGroceryItem).done)" )
                     }
-                    
                 }
+                println("----")
+                var fReq = NSFetchRequest(entityName: "CDGroceryItem")
+                var error:NSError? = nil
+                var results: NSArray = self.moCtx.executeFetchRequest(fReq, error: &error)!
+                for res in results as [CDGroceryItem] {
+                    println("Item: \(res.itemName) - \(res.done)")
+                }
+                println("----")
             }
         }
+    }
+    
+    func redoPages() {
+        println("Saving and reloading lists...")
+        self.appDel.saveContext()
+        loadCDGroceries()
+        modelController.updateList(self.cdGroceryLists)
     }
     
     var modelController: ModelController {
@@ -91,7 +96,8 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         // In more complex implementations, the model controller may be passed to the view controller.
         if _modelController == nil {
             _modelController = ModelController()
-            _modelController!.updateList(self.groceryLists)
+            _modelController!.setRVC(self)
+            _modelController!.updateList(self.cdGroceryLists)
         }
         return _modelController!
     }
@@ -119,28 +125,16 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
             if listName == "" {
                 self.showMsg("Missing Name!", msg: "Enter a valid list name.")
             } else {
-                self.groceryLists.append(GroceryList(listName: listName, groceries: []))
-                self.modelController.updateList(self.groceryLists)
-                let newListController: DataViewController = self.modelController.viewControllerAtIndex(self.groceryLists.count - 1, storyboard: self.storyboard!)!
+                self.insertGroceryList(listName)
+                self.redoPages()
+                
+                let newListController: DataViewController = self.modelController.viewControllerAtIndex(self.cdGroceryLists.count - 1, storyboard: self.storyboard!)!
                 self.pageViewController!.setViewControllers([newListController], direction: .Forward, animated: true, completion: {done in })
                 self.navItem.title = listName
-                
-                self.makeGroceryList(listName)
-                self.appDel.saveContext()
-                
-                var fReq = NSFetchRequest(entityName: "CDGroceryList")
-                var error:NSError? = nil
-                
-                var results: NSArray = self.moCtx.executeFetchRequest(fReq, error: &error)!
-                
-                for res in results as [CDGroceryList] {
-                    println("Result: \(res.listName)")
-                }
             }
         }))
         
         alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
-        
         self.presentViewController(alert, animated: false, completion: nil)
     }
     
@@ -151,11 +145,11 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         let currentViewController = self.pageViewController!.viewControllers[0] as DataViewController
         var index = self.modelController.indexOfViewController(currentViewController as DataViewController)
         
-        let alert = UIAlertController(title: "List: " + self.groceryLists[index].listName, message: "Edit name and tap update.", preferredStyle: UIAlertControllerStyle.Alert)
+        let alert = UIAlertController(title: "List: " + self.cdGroceryLists[index].listName, message: "Edit name and tap update.", preferredStyle: UIAlertControllerStyle.Alert)
         
         alert.addTextFieldWithConfigurationHandler{ (txtListName:UITextField!) -> Void in
             txtListName.placeholder = "Enter a list name"
-            txtListName.text = self.groceryLists[index].listName
+            txtListName.text = self.cdGroceryLists[index].listName
         }
         
         alert.addAction(UIAlertAction(title: "Update", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
@@ -163,24 +157,24 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
             if listName == "" {
                 self.showMsg("Missing Name!", msg: "Enter a valid item name.")
             } else {
-                self.groceryLists[index].listName = listName
-                self.modelController.updateList(self.groceryLists)
+                self.cdGroceryLists[index].listName = listName
+                self.redoPages()
                 self.navItem.title = listName
             }
         }))
         
-        if groceryLists.count > 1 {
+        if cdGroceryLists.count > 1 {
             alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action:UIAlertAction!) -> Void in
                 
-                let alert2 = UIAlertController(title: "Delete List: " + self.groceryLists[index].listName, message: "Are you sure you want to delete?", preferredStyle: UIAlertControllerStyle.Alert)
+                let alert2 = UIAlertController(title: "Delete List: " + self.cdGroceryLists[index].listName, message: "Are you sure you want to delete?", preferredStyle: UIAlertControllerStyle.Alert)
                 
                 
                 alert2.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
-                    self.groceryLists.removeAtIndex(index)
-                    self.modelController.updateList(self.groceryLists)
+                    self.moCtx.deleteObject(self.cdGroceryLists[index])
+                    self.redoPages()
                     
                     var direction = UIPageViewControllerNavigationDirection.Forward
-                    if self.groceryLists.count == index {
+                    if self.cdGroceryLists.count == index {
                         direction = UIPageViewControllerNavigationDirection.Reverse
                         index--
                     }
@@ -191,13 +185,11 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
                 }))
                 
                 alert2.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Cancel, handler: nil))
-                
                 self.presentViewController(alert2, animated: false, completion: nil)
             }))
         }
         
         alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
-        
         self.presentViewController(alert, animated: false, completion: nil)
     }
     
@@ -214,26 +206,34 @@ class RootViewController: UIViewController, UIPageViewControllerDelegate, NSFetc
         navItem.title = self.modelController.titleOfViewController(currentViewController)
     }
     
-    // Core Data Make & Fetch
+    // Core Data Insert & Fetch
     
-    func makeGroceryList(listName: String) -> CDGroceryList {
+    func insertGroceryList(listName: String) -> CDGroceryList {
         let eDesc = NSEntityDescription.entityForName("CDGroceryList", inManagedObjectContext: self.moCtx)
         let gList = CDGroceryList(entity: eDesc!, insertIntoManagedObjectContext: self.moCtx)
         gList.listName = listName
         return gList
     }
     
-    func makeGroceryItem(itemName: String) -> CDGroceryItem {
+    func updateGroceryList(listName: String) {
+        
+    }
+    
+    
+    func insertGroceryItem(itemName: String) -> CDGroceryItem {
         let eDesc = NSEntityDescription.entityForName("CDGroceryItem", inManagedObjectContext: self.moCtx)
         let gItem = CDGroceryItem(entity: eDesc!, insertIntoManagedObjectContext: self.moCtx)
         gItem.itemName = itemName
+        gItem.done = false
         return gItem
     }
     
     func getGroceryListFetchReq() -> NSFetchRequest {
         let fReq = NSFetchRequest(entityName: "CDGroceryList")
-        let sortDesc = NSSortDescriptor(key: "listName", ascending: true)
-        fReq.sortDescriptors = [sortDesc]
+        // This sorts all upper and then lower case - not very useful! Need to sort this after retrieving from db
+        // let sortDesc = NSSortDescriptor(key: "listName", ascending: true)
+        // fReq.sortDescriptors = [sortDesc]
+        fReq.sortDescriptors = []
         return fReq
     }
     

@@ -21,6 +21,7 @@ There is no need to actually create view controllers for each page in advance --
 class ModelController: NSObject, UIPageViewControllerDataSource {
     
     var pageData = NSArray()
+    var rvc: RootViewController?
     
     func viewControllerAtIndex(index: Int, storyboard: UIStoryboard) -> DataViewController? {
         // Return the data view controller for the given index.
@@ -30,6 +31,7 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
         
         // Create a new view controller and pass suitable data.
         let dataViewController = storyboard.instantiateViewControllerWithIdentifier("DataViewController") as DataViewController
+        dataViewController.rvc = rvc
         dataViewController.dataObject = self.pageData[index]
         return dataViewController
     }
@@ -50,12 +52,16 @@ class ModelController: NSObject, UIPageViewControllerDataSource {
             return ""
         }
         else {
-            return (pageData[index] as GroceryList).listName as String
+            return (pageData[index] as CDGroceryList).listName as String
         }
     }
     
-    func updateList(pageData : [GroceryList]) {
+    func updateList(pageData : [CDGroceryList]) {
         self.pageData = pageData
+    }
+    
+    func setRVC(rvc: RootViewController) {
+        self.rvc = rvc
     }
     
     // MARK: - Page View Controller Data Source

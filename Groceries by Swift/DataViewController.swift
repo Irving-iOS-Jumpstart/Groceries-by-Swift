@@ -11,6 +11,7 @@ import UIKit
 class DataViewController: UITableViewController {
     
     var dataObject: AnyObject?
+    var rvc: RootViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,27 +24,26 @@ class DataViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return (dataObject! as GroceryList).groceries.count + 1
+        return (dataObject! as CDGroceryList).groceries.count + 1
     }
     
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("tableCell", forIndexPath: indexPath) as UITableViewCell
-        
-        let groceries: [GroceryItem] = (dataObject! as GroceryList).groceries
+        let groceries = (dataObject! as CDGroceryList).groceries.allObjects
         
         if indexPath.row == groceries.count {
             cell.textLabel!.text = "Add item..."
         } else {
-            cell.textLabel!.text = groceries[indexPath.row].itemName + (groceries[indexPath.row].done ? "  \u{2713}" : "")
+            let gItem = groceries[indexPath.row] as CDGroceryItem
+            cell.textLabel!.text = gItem.itemName + (gItem.done == true ? "  \u{2713}" : "")
         }
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let gList = dataObject! as GroceryList
+        let gList = dataObject! as CDGroceryList
         
         if(gList.groceries.count == indexPath.row) {
             // Add Item...
@@ -58,25 +58,27 @@ class DataViewController: UITableViewController {
                 if itemName == "" {
                     self.showMsg("Missing Name!", msg: "Enter a valid item name.")
                 } else {
-                    gList.groceries.append(GroceryItem(itemName: itemName))
+                    // gList.groceries.append(GroceryItem(itemName: itemName))
+                    var groceries = gList.groceries.allObjects as [CDGroceryItem]
+                    groceries.append(self.rvc!.insertGroceryItem(itemName))
+                    gList.groceries = NSSet(array: groceries)
+                    self.rvc!.redoPages()
                     tableView.reloadData()
                 }
-                
             }))
             
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
-            
             self.presentViewController(alert, animated: false, completion: nil)
         }
         else {
             // Edit Item...
-            var groc = gList.groceries[indexPath.row]
+            var gItem = gList.groceries.allObjects[indexPath.row] as CDGroceryItem
             
-            let alert = UIAlertController(title: "Item: " + groc.itemName, message: "Edit name and tap update.", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: "Item: " + gItem.itemName, message: "Edit name and tap update.", preferredStyle: UIAlertControllerStyle.Alert)
             
             alert.addTextFieldWithConfigurationHandler{ (txtItemName:UITextField!) -> Void in
                 txtItemName.placeholder = "Enter an item name"
-                txtItemName.text = groc.itemName
+                txtItemName.text = gItem.itemName
             }
             
             alert.addAction(UIAlertAction(title: "Update", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
@@ -84,24 +86,27 @@ class DataViewController: UITableViewController {
                 if itemName == "" {
                     self.showMsg("Missing Name!", msg: "Enter a valid item name.")
                 } else {
-                    groc.itemName = itemName
+                    gItem.itemName = itemName
+                    self.rvc!.redoPages()
                     tableView.reloadData()
                 }
             }))
             
-            alert.addAction(UIAlertAction(title: groc.done ? "Uncheck" : "Check!", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
+            alert.addAction(UIAlertAction(title: gItem.done == true ? "Uncheck" : "Check!", style: UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
                 let itemName: String = (alert.textFields![0] as UITextField).text.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
                 if itemName == "" {
                     self.showMsg("Missing Name!", msg: "Enter a valid item name.")
                 } else {
-                    groc.itemName = itemName
-                    groc.done = !groc.done
+                    gItem.itemName = itemName
+                    gItem.done = (gItem.done == true ? false : true)
+                    self.rvc!.redoPages()
                     tableView.reloadData()
                 }
             }))
             
             alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action:UIAlertAction!) -> Void in
-                gList.groceries.removeAtIndex(indexPath.row)
+                self.rvc!.moCtx.deleteObject(gItem)
+                self.rvc!.redoPages()
                 tableView.reloadData()
             }))
             
